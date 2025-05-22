@@ -1,4 +1,3 @@
-// components/HeaderMenu.tsx
 import React from 'react';
 import styled from 'styled-components/native';
 import { View, TouchableOpacity, Text, Image } from 'react-native';
@@ -25,18 +24,19 @@ const MenuLeft = styled.View`
 
 interface HeaderProps {
   onProfilePress: () => void;
-  navigateTo: (screen: string) => void;
+  navigateTo: (screen: string, params?: object) => void;
   profileImage: string | null;
+  user?: any;
 }
 
-export default function HeaderMenu({ onProfilePress, navigateTo, profileImage }: HeaderProps) {
+export default function HeaderMenu({ onProfilePress, navigateTo, profileImage, user }: HeaderProps) {
   return (
     <HeaderContainer>
       <MenuLeft>
-        <TouchableOpacity onPress={() => navigateTo('Welcome')}> 
+        <TouchableOpacity onPress={() => navigateTo('Home', { user })}>
           <MenuText>HOME</MenuText>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigateTo('Articles')}>
+        <TouchableOpacity onPress={() => navigateTo('Articles', { user })}>
           <MenuText>ARTIGOS</MenuText>
         </TouchableOpacity>
       </MenuLeft>

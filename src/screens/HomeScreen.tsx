@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Dimensions } from 'react-native';
+import { Dimensions, Button } from 'react-native'; 
 import styled from 'styled-components/native';
 import Carousel from 'react-native-reanimated-carousel';
 
@@ -27,7 +27,7 @@ const Section = styled.View`
 
 const SectionTitle = styled.Text`
   font-size: 20px;
-  font-weight: bold;
+  font-weight: bold; 
   margin-bottom: 16px;
   font-family: 'Montserrat-Bold';
   color: #333;
@@ -35,7 +35,11 @@ const SectionTitle = styled.Text`
 
 const screenWidth = Dimensions.get('window').width;
 
-export default function HomeScreen({ navigation }: any) {
+export default function HomeScreen({ navigation, route }: any) {
+  const user = route.params?.user;
+
+  console.log('Usuário recebido na Home:', user);
+
   const [modalVisible, setModalVisible] = useState(false);
   const [latestPost, setLatestPost] = useState<any>(null);
   const [recentPosts, setRecentPosts] = useState<any[]>([]);
@@ -93,17 +97,20 @@ export default function HomeScreen({ navigation }: any) {
     <Container>
       <HeaderMenu
         onProfilePress={() => setModalVisible(true)}
-        navigateTo={(screen) => navigation.navigate(screen)}
+        navigateTo={(screen, params = {}) => navigation.navigate(screen, { ...params, user })}
         profileImage={profileImage}
+        user={user}
       />
 
       <ProfileMenuModal
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
-        navigateTo={(screen) => navigation.navigate(screen)}
+        navigateTo={(screen, params) => navigation.navigate(screen, params)}
+        user={user}
       />
 
       <ContentContainer>
+
         {/* Destaque */}
         {latestPost && (
           <FeaturedPostContainer>
@@ -131,7 +138,7 @@ export default function HomeScreen({ navigation }: any) {
         {/* Carousel de mais curtidos */}
         <Section style={{ pointerEvents: modalVisible ? 'none' : 'auto' }}>
           <SectionTitle>Mais Curtidos</SectionTitle>
-          { !modalVisible && (
+          {!modalVisible && (
             <Carousel
               loop
               width={screenWidth * 0.75}

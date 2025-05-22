@@ -1,7 +1,6 @@
-// components/ProfileMenuModal.tsx
 import React from 'react';
 import styled from 'styled-components/native';
-import { Modal, TouchableOpacity } from 'react-native';
+import { Modal } from 'react-native';
 
 const ModalContainer = styled.View`
   flex: 1;
@@ -11,7 +10,7 @@ const ModalContainer = styled.View`
 `;
 
 const OptionButton = styled.TouchableOpacity`
-  background-color: #1e1e1e;
+  background-color: #1e1e1e; 
   padding: 16px 32px;
   margin: 10px 0;
   border-radius: 10px;
@@ -28,25 +27,38 @@ const OptionText = styled.Text`
 interface Props {
   visible: boolean;
   onClose: () => void;
-  navigateTo: (screen: string) => void;
+  navigateTo: (screen: string, params?: object) => void;
+  user?: {
+    id: number | string;
+    first_name?: string;
+    last_name?: string;
+    email?: string;
+    profile_image?: string | null;
+  };
 }
 
-export default function ProfileMenuModal({ visible, onClose, navigateTo }: Props) {
+export default function ProfileMenuModal({ visible, onClose, navigateTo, user }: Props) {
   function handleNavigate(screen: string) {
     onClose();
-    navigateTo(screen);
-  }
+    setTimeout(() => {
+      if ((screen === 'AddPost' || screen === 'EditProfile' || screen === 'MyArticles') && user) {
+        navigateTo(screen, { user });
+      } else {
+        navigateTo(screen);
+      }
+    }, 300); 
+  }  
 
   return (
     <Modal visible={visible} animationType="slide" transparent>
       <ModalContainer>
-        <OptionButton onPress={() => handleNavigate('Profile')}>
+        <OptionButton onPress={() => handleNavigate('EditProfile')}>
           <OptionText>Perfil</OptionText>
         </OptionButton>
         <OptionButton onPress={() => handleNavigate('MyArticles')}>
           <OptionText>Meus Artigos</OptionText>
         </OptionButton>
-        <OptionButton onPress={() => handleNavigate('AddArticle')}>
+        <OptionButton onPress={() => handleNavigate('AddPost')}>
           <OptionText>Adicionar Artigo</OptionText>
         </OptionButton>
         <OptionButton onPress={onClose}>

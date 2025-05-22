@@ -1,131 +1,101 @@
 import React, { useEffect, useState } from 'react';
-import {
-  View,
-  Text,
-  FlatList,
-  StyleSheet,
-  TouchableOpacity,
-  ActivityIndicator,
-} from 'react-native';
+import styled from 'styled-components/native';
+import { View, Text, Dimensions } from 'react-native';
+
 import HeaderMenu from '../components/HeaderMenu';
 import ProfileMenuModal from '../components/ProfileMenuModal';
-import { useNavigation } from '@react-navigation/native';
+import { PostCard } from '../components/PostCard';
+import { fetchPosts } from '../services/api';
 
-type Post = {
-  id: number;
-  title: string;
-  content: string;
-  created_at: string;
-};
+const Container = styled.View`
+  flex: 1;
+`;
 
-export default function ArticlesScreen() {
-  const navigation = useNavigation<any>();
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [menuVisible, setMenuVisible] = useState(false);
-  const [profileImage, setProfileImage] = useState<string | null>(null); // caso deseje puxar futuramente
+const ContentContainer = styled.ScrollView`
+  flex: 1;
+  padding: 16px;
+`;
 
-  const navigateTo = (screen: string, params?: any) => {
-    navigation.navigate(screen, params);
-  };
+const Section = styled.View`
+  margin-bottom: 24px;
+`;
+
+const SectionTitle = styled.Text`
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 16px;
+  font-family: 'Montserrat-Bold';
+  color: #333;
+`;
+
+export default function ArticlesScreen({ navigation, route }: any) {
+  const user = route.params?.user;
+  const profileImage = user?.profile ?? null;
+
+  // ✅ LOG PARA DEBUG
+  console.log('Usuário recebido na Articles:', user);
+
+  const [modalVisible, setModalVisible] = useState(false);
+  const [allPosts, setAllPosts] = useState<any[]>([]);
 
   useEffect(() => {
-    const fetchPosts = async () => {
+    let isMounted = true;
+
+    const loadPosts = async () => {
       try {
-        const response = await fetch('http://192.168.0.21:3000/api/posts');
-        const data = await response.json();
-        setPosts(data);
+        const posts = await fetchPosts();
+        if (isMounted) {
+          setAllPosts(Array.isArray(posts) ? posts : []);
+        }
       } catch (error) {
-        console.error('Erro ao buscar posts:', error);
-      } finally {
-        setLoading(false);
+        if (isMounted) setAllPosts([]);
       }
     };
 
-    fetchPosts();
+    loadPosts();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
-  function handlePostPress(post: Post) {
-    navigateTo('PostDetail', { post });
-  }
+  const handlePostPress = (postId: number) => {
+    navigation.navigate('PostDetail', { postId });
+  };
 
   return (
-    <View style={styles.container}>
-      {/* Header */}
+    <Container>
       <HeaderMenu
-        onProfilePress={() => setMenuVisible(true)}
-        navigateTo={navigateTo}
+        onProfilePress={() => setModalVisible(true)}
+        navigateTo={(screen, params) => navigation.navigate(screen, params)}
         profileImage={profileImage}
+        user={user}
       />
 
-      {/* Modal do menu de perfil */}
       <ProfileMenuModal
-        visible={menuVisible}
-        onClose={() => setMenuVisible(false)}
-        navigateTo={navigateTo}
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        navigateTo={(screen, params) => navigation.navigate(screen, params)}
+        user={user}
       />
 
-      {/* Conteúdo */}
-      <Text style={styles.title}>Todos os Artigos</Text>
-
-      {loading ? (
-        <ActivityIndicator size="large" color="#000" />
-      ) : (
-        <FlatList
-          data={posts}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => (
-            <TouchableOpacity style={styles.postCard} onPress={() => handlePostPress(item)}>
-              <Text style={styles.postTitle}>{item.title}</Text>
-              <Text style={styles.postDate}>
-                {new Date(item.created_at).toLocaleDateString()}
-              </Text>
-              <Text numberOfLines={2} style={styles.postExcerpt}>
-                {item.content}
-              </Text>
-            </TouchableOpacity>
+      <ContentContainer>
+        <Section>
+          <SectionTitle>Todos os Artigos</SectionTitle>
+          {allPosts.length > 0 ? (
+            allPosts.map((post) => (
+              <PostCard
+                key={post.id}
+                post={post}
+                onPress={() => handlePostPress(post.id)}
+                variant="list"
+              />
+            ))
+          ) : (
+            <Text>Nenhum artigo encontrado.</Text>
           )}
-          ListEmptyComponent={
-            <Text style={{ textAlign: 'center', marginTop: 32 }}>
-              Nenhum artigo encontrado.
-            </Text>
-          }
-        />
-      )}
-    </View>
+        </Section>
+      </ContentContainer>
+    </Container>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    paddingTop: 30,
-    flex: 1,
-    backgroundColor: '#fff',
-    paddingHorizontal: 16,
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginVertical: 16,
-  },
-  postCard: {
-    marginBottom: 12,
-    padding: 12,
-    backgroundColor: '#f2f2f2',
-    borderRadius: 8,
-  },
-  postTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 4,
-  },
-  postDate: {
-    fontSize: 14,
-    color: '#888',
-    marginBottom: 6,
-  },
-  postExcerpt: {
-    fontSize: 15,
-    color: '#333',
-  },
-});

@@ -49,13 +49,24 @@ export default function LoginScreen({ navigation }: Props) {
         return;
       }
   
-      // Login bem-sucedido → redirecionar com os dados do usuário
-      navigation.navigate('Welcome', { user: data.user });
+      console.log('Usuário logado:', data.user); // DEBUG: veja como é o objeto user
+  
+      // Extrair os campos que você quer passar para Home
+      const userToSend = {
+        id: data.user.id,
+        first_name: data.user.first_name || data.user.firstName || '',
+        last_name: data.user.last_name || data.user.lastName || '',
+        email: data.user.email || '',
+        profile_image: data.user.profile_image || data.user.profileImage || null,
+        // inclua aqui outros campos que achar importante
+      };
+  
+      navigation.navigate('Home', { user: userToSend });
   
     } catch (error) {
       Alert.alert('Erro', 'Erro de conexão');
     }
-  }  
+  } 
 
   return (
     <Container>
