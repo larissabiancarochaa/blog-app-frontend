@@ -4,6 +4,7 @@ import styled from 'styled-components/native';
 import * as ImagePicker from 'expo-image-picker';
 import FormInput from '../components/FormInput';
 import PrimaryButton from '../components/PrimaryButton';
+import { API_URL } from '../services/config';
 
 const Container = styled.View`
   flex: 1;
@@ -70,7 +71,7 @@ export default function EditarArtigo({ navigation, route }: Props) {
     }
 
     try {
-      const res = await fetch(`http://192.168.0.21:3000/api/posts/update/${article.id}`, {
+      const res = await fetch(`${API_URL}/api/posts/update/${article.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

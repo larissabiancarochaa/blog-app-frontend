@@ -45,7 +45,7 @@ export default function HomeScreen({ navigation, route }: any) {
   const [recentPosts, setRecentPosts] = useState<any[]>([]);
   const [topPosts, setTopPosts] = useState<any[]>([]);
   const [carouselScrollEnabled, setCarouselScrollEnabled] = useState(true);
-  const profileImage = null;
+  const profileImage = user?.profile_image ?? null;
 
   useEffect(() => {
     let isMounted = true;

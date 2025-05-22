@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components/native';
-import { View, TouchableOpacity, Text, Image } from 'react-native';
+import { TouchableOpacity, Image } from 'react-native';
 
 const HeaderContainer = styled.View`
   flex-direction: row;
@@ -29,7 +29,22 @@ interface HeaderProps {
   user?: any;
 }
 
+// Função para garantir que a string base64 tem prefixo válido
+function formatBase64Image(uri: string) {
+  if (uri.startsWith('data:image')) {
+    return uri; // já está no formato correto
+  }
+  // Supondo jpeg — pode mudar para png se for outro formato
+  return `data:image/jpeg;base64,${uri}`;
+}
+
 export default function HeaderMenu({ onProfilePress, navigateTo, profileImage, user }: HeaderProps) {
+  console.log('profileImage recebido em HeaderMenu:', profileImage);
+  
+  const imageSource = profileImage
+    ? { uri: formatBase64Image(profileImage) }
+    : require('../assets/default-profile.png');
+
   return (
     <HeaderContainer>
       <MenuLeft>
@@ -43,11 +58,7 @@ export default function HeaderMenu({ onProfilePress, navigateTo, profileImage, u
 
       <TouchableOpacity onPress={onProfilePress}>
         <Image
-          source={
-            profileImage
-              ? { uri: `http://192.168.0.21:3000/uploads/${profileImage}` }
-              : require('../assets/default-profile.png')
-          }
+          source={imageSource}
           style={{ width: 40, height: 40, borderRadius: 20 }}
         />
       </TouchableOpacity>

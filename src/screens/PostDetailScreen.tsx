@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert } from 'react-native';
 import styled from 'styled-components/native';
+import { API_URL } from '../services/config';
 
 const Container = styled.ScrollView`
   flex: 1;
@@ -58,7 +59,7 @@ export default function PostDetailScreen({ route, navigation }: any) {
   useEffect(() => {
     async function loadPost() {
       try {
-        const res = await fetch(`http://192.168.0.21:3000/api/posts/${postId}`);
+        const res = await fetch(`${API_URL}/api/posts/${postId}`);
         const data = await res.json();
 
         if (!res.ok) {

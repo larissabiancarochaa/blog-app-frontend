@@ -3,6 +3,7 @@ import { Alert } from 'react-native';
 import styled from 'styled-components/native';
 import FormInput from '../components/FormInput';
 import PrimaryButton from '../components/PrimaryButton';
+import { API_URL } from '../services/config';
 
 const Container = styled.View`
   flex: 1;
@@ -29,7 +30,7 @@ export default function ResetPasswordScreen({ navigation }: Props) {
 
   async function handleResetPassword() {
     try {
-      const res = await fetch('http://192.168.0.21:3000/api/auth/reset-password', {
+      const res = await fetch(`${API_URL}/api/auth/reset-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, newPassword }),

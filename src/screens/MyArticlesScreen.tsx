@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Alert, FlatList, Modal, TouchableOpacity } from 'react-native'; // Importei TouchableOpacity
 import styled from 'styled-components/native';
 import { format } from 'date-fns';
+import { API_URL } from '../services/config';
 
 interface Article {
   id: number;
@@ -125,7 +126,7 @@ export default function MyArticlesScreen({ route, navigation }: Props) {
   const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
-    fetch(`http://192.168.0.21:3000/api/posts/my-posts/${user.id}`)
+    fetch(`${API_URL}/api/posts/my-posts/${user.id}`)
       .then(res => {
         if (!res.ok) throw new Error('Erro na resposta da API');
         return res.json();
@@ -146,7 +147,7 @@ export default function MyArticlesScreen({ route, navigation }: Props) {
     if (!selectedArticle) return;
 
     try {
-      const res = await fetch(`http://192.168.0.21:3000/api/posts/delete/${selectedArticle.id}`, {
+      const res = await fetch(`${API_URL}/api/posts/delete/${selectedArticle.id}`, {
         method: 'DELETE',
       });
 

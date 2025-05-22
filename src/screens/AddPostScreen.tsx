@@ -4,6 +4,7 @@ import styled from 'styled-components/native';
 import * as ImagePicker from 'expo-image-picker';
 import FormInput from '../components/FormInput';
 import PrimaryButton from '../components/PrimaryButton';
+import { API_URL } from '../services/config'; 
 
 const Container = styled.View`
   flex: 1;
@@ -73,7 +74,7 @@ export default function AddPostScreen({ navigation, route }: Props) {
     const randomLikes = Math.floor(Math.random() * 100);
 
     try {
-      const res = await fetch('http://192.168.0.21:3000/api/posts/create', {
+      const res = await fetch(`${API_URL}/api/posts/create`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

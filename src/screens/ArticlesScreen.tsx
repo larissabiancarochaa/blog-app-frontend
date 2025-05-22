@@ -28,12 +28,21 @@ const SectionTitle = styled.Text`
   color: #333;
 `;
 
+const formatBase64Image = (img: string | undefined | null) => {
+  if (!img) return null;
+  return img.startsWith('data:image') ? img : `data:image/jpeg;base64,${img}`;
+};
+
 export default function ArticlesScreen({ navigation, route }: any) {
   const user = route.params?.user;
-  const profileImage = user?.profile ?? null;
+
+  const profileImage = formatBase64Image(user?.profile_image); 
 
   // ✅ LOG PARA DEBUG
   console.log('Usuário recebido na Articles:', user);
+  console.log('Imagem de perfil bruta:', user?.profile);
+  console.log('Imagem de perfil formatada:', profileImage);
+
 
   const [modalVisible, setModalVisible] = useState(false);
   const [allPosts, setAllPosts] = useState<any[]>([]);
