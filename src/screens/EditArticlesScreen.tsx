@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, ScrollView, TouchableOpacity } from 'react-native';
+import {
+  Alert,
+  ScrollView,
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
 import styled from 'styled-components/native';
 import * as ImagePicker from 'expo-image-picker';
 import FormInput from '../components/FormInput';
@@ -8,12 +14,13 @@ import { API_URL } from '../services/config';
 
 const Container = styled.View`
   flex: 1;
-  background-color: #121212;
-  padding: 20px;
+  background-color: #fff;
+  padding: 20px 20px 40px 20px;
+  justify-content: center;
 `;
 
 const Title = styled.Text`
-  color: white;
+  color: #222;
   font-family: 'Montserrat-Bold';
   font-size: 28px;
   margin-bottom: 20px;
@@ -28,9 +35,22 @@ const ImagePreview = styled.Image`
 `;
 
 const UploadText = styled.Text`
-  color: #fff;
+  color: #555;
   text-align: center;
   margin-bottom: 10px;
+  font-size: 16px;
+`;
+
+const BackButton = styled.TouchableOpacity`
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 8px 12px;
+`;
+
+const BackButtonText = styled.Text`
+  color: #555;
+  font-size: 16px;
 `;
 
 interface Props {
@@ -97,30 +117,42 @@ export default function EditarArtigo({ navigation, route }: Props) {
   }
 
   return (
-    <ScrollView>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
       <Container>
-        <Title>Editar Artigo</Title>
+        <BackButton onPress={() => navigation.goBack()}>
+          <BackButtonText>← Voltar</BackButtonText>
+        </BackButton>
 
-        <TouchableOpacity onPress={pickImage}>
-          {imageBase64 ? (
-            <ImagePreview source={{ uri: imageBase64 }} />
-          ) : (
-            <UploadText>Selecionar nova imagem</UploadText>
-          )}
-        </TouchableOpacity>
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}
+          keyboardShouldPersistTaps="handled"
+        >
+          <Title>Editar Artigo</Title>
 
-        <FormInput placeholder="Título" value={title} onChangeText={setTitle} />
-        <FormInput
-          placeholder="Conteúdo"
-          value={content}
-          onChangeText={setContent}
-          multiline
-          numberOfLines={6}
-          style={{ height: 120, textAlignVertical: 'top' }}
-        />
+          <TouchableOpacity onPress={pickImage}>
+            {imageBase64 ? (
+              <ImagePreview source={{ uri: imageBase64 }} />
+            ) : (
+              <UploadText>Selecionar nova imagem</UploadText>
+            )}
+          </TouchableOpacity>
 
-        <PrimaryButton title="Salvar Alterações" onPress={handleUpdatePost} />
+          <FormInput placeholder="Título" value={title} onChangeText={setTitle} />
+          <FormInput
+            placeholder="Conteúdo"
+            value={content}
+            onChangeText={setContent}
+            multiline
+            numberOfLines={6}
+            style={{ height: 120, textAlignVertical: 'top' }}
+          />
+
+          <PrimaryButton title="Salvar Alterações" onPress={handleUpdatePost} />
+        </ScrollView>
       </Container>
-    </ScrollView>
+    </KeyboardAvoidingView>
   );
 }

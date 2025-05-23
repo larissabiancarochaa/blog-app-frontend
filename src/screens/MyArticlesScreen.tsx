@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, FlatList, Modal, TouchableOpacity } from 'react-native'; // Importei TouchableOpacity
+import { Alert, FlatList, Modal, TouchableOpacity } from 'react-native';
 import styled from 'styled-components/native';
 import { format } from 'date-fns';
 import { API_URL } from '../services/config';
@@ -7,7 +7,7 @@ import { API_URL } from '../services/config';
 interface Article {
   id: number;
   title: string;
-  image: string | null; 
+  image: string | null;
   likes: number;
   created_at: string;
   updated_at: string | null;
@@ -20,81 +20,101 @@ interface Props {
 
 const Container = styled.View`
   flex: 1;
-  background-color: #121212;
+  background-color: #ffffff;
   padding: 20px;
 `;
 
 const Card = styled.View`
-  background-color: #1e1e1e;
+  flex-direction: row;
+  background-color: #f9f9f9;
   border-radius: 12px;
   margin-bottom: 16px;
   overflow: hidden;
+  elevation: 2;
+  shadow-color: #000;
+  shadow-offset: 0px 2px;
+  shadow-opacity: 0.1;
+  shadow-radius: 4px;
+`;
+
+const ImageWrapper = styled.View`
+  width: 120px;
+  height: 120px;
+  overflow: hidden;
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
 `;
 
 const Image = styled.Image`
   width: 100%;
-  height: 160px;
+  height: 100%;
 `;
 
 const Info = styled.View`
-  padding: 12px;
+  flex: 1;
+  padding: 12px 16px;
+  justify-content: center;
 `;
 
 const Title = styled.Text`
-  color: white;
+  color: #222222;
   font-size: 18px;
   font-family: 'Montserrat-Bold';
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 `;
 
 const Meta = styled.Text`
-  color: #aaa;
+  color: #555555;
   font-size: 13px;
+  margin-bottom: 4px;
 `;
 
 const Like = styled.Text`
-  color: #10a3b9;
+  color: #888888;
   font-size: 13px;
   margin-top: 6px;
 `;
 
 const Actions = styled.View`
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: flex-start;
   margin-top: 10px;
 `;
 
 const ActionButton = styled.TouchableOpacity`
-  padding: 8px;
+  padding: 8px 12px;
+  margin-right: 12px;
 `;
 
 const ActionText = styled.Text`
-  color: #5da9e9;
+  color: #2a7ae2;
+  font-weight: 600;
 `;
 
 const ModalContainer = styled.View`
   flex: 1;
   justify-content: center;
-  background-color: rgba(0, 0, 0, 0.6);
+  background-color: rgba(0, 0, 0, 0.5);
   padding: 20px;
 `;
 
 const ModalContent = styled.View`
-  background-color: #1e1e1e;
+  background-color: #ffffff;
   border-radius: 12px;
   padding: 20px;
 `;
 
 const ModalTitle = styled.Text`
-  color: white;
+  color: #222222;
   font-size: 20px;
   font-family: 'Montserrat-Bold';
   margin-bottom: 16px;
 `;
 
 const ModalText = styled.Text`
-  color: #ccc;
+  color: #444444;
   margin-bottom: 16px;
+  font-size: 16px;
 `;
 
 const ModalActions = styled.View`
@@ -105,7 +125,7 @@ const ModalActions = styled.View`
 
 const CancelButton = styled.TouchableOpacity`
   padding: 10px 20px;
-  background-color: #333;
+  background-color: #ccc;
   border-radius: 8px;
 `;
 
@@ -117,6 +137,7 @@ const DeleteButton = styled.TouchableOpacity`
 
 const ButtonText = styled.Text`
   color: white;
+  font-weight: 600;
 `;
 
 export default function MyArticlesScreen({ route, navigation }: Props) {
@@ -172,19 +193,19 @@ export default function MyArticlesScreen({ route, navigation }: Props) {
         keyExtractor={item => item.id.toString()}
         renderItem={({ item }) => (
           <Card>
-            {/* Tornei a imagem clicável */}
             <TouchableOpacity onPress={() => handleArticlePress(item)}>
-              {item.image ? (
-                <Image source={{ uri: item.image }} />
-              ) : (
-                <Image source={require('../assets/default-profile.png')} />
-              )}
+              <ImageWrapper>
+                {item.image ? (
+                  <Image source={{ uri: item.image }} resizeMode="cover" />
+                ) : (
+                  <Image source={require('../assets/default-profile.png')} resizeMode="cover" />
+                )}
+              </ImageWrapper>
             </TouchableOpacity>
 
             <Info>
-              {/* Tornei o título clicável */}
               <TouchableOpacity onPress={() => handleArticlePress(item)}>
-                <Title>{item.title}</Title>
+                <Title numberOfLines={2}>{item.title}</Title>
               </TouchableOpacity>
 
               <Meta>Criado em: {format(new Date(item.created_at), 'dd/MM/yyyy')}</Meta>
@@ -192,6 +213,7 @@ export default function MyArticlesScreen({ route, navigation }: Props) {
                 <Meta>Atualizado em: {format(new Date(item.updated_at), 'dd/MM/yyyy')}</Meta>
               )}
               <Like>❤️ {item.likes || 0} curtidas</Like>
+
               <Actions>
                 <ActionButton
                   onPress={() => navigation.navigate('EditarArtigo', { article: item })}

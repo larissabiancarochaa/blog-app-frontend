@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components/native';
-import { View, Text, Dimensions } from 'react-native';
+import { View, Text } from 'react-native';
 
 import HeaderMenu from '../components/HeaderMenu';
 import ProfileMenuModal from '../components/ProfileMenuModal';
@@ -9,11 +9,13 @@ import { fetchPosts } from '../services/api';
 
 const Container = styled.View`
   flex: 1;
+  background-color: #fff;
 `;
 
 const ContentContainer = styled.ScrollView`
   flex: 1;
   padding: 16px;
+  background-color: #fff;
 `;
 
 const Section = styled.View`
@@ -28,6 +30,14 @@ const SectionTitle = styled.Text`
   color: #333;
 `;
 
+const EmptyMessage = styled.Text`
+  font-size: 16px;
+  color: #888;
+  font-family: 'Montserrat-Regular';
+  text-align: center;
+  margin-top: 32px;
+`;
+
 const formatBase64Image = (img: string | undefined | null) => {
   if (!img) return null;
   return img.startsWith('data:image') ? img : `data:image/jpeg;base64,${img}`;
@@ -35,14 +45,7 @@ const formatBase64Image = (img: string | undefined | null) => {
 
 export default function ArticlesScreen({ navigation, route }: any) {
   const user = route.params?.user;
-
-  const profileImage = formatBase64Image(user?.profile_image); 
-
-  // ✅ LOG PARA DEBUG
-  console.log('Usuário recebido na Articles:', user);
-  console.log('Imagem de perfil bruta:', user?.profile);
-  console.log('Imagem de perfil formatada:', profileImage);
-
+  const profileImage = formatBase64Image(user?.profile_image);
 
   const [modalVisible, setModalVisible] = useState(false);
   const [allPosts, setAllPosts] = useState<any[]>([]);
@@ -91,17 +94,18 @@ export default function ArticlesScreen({ navigation, route }: any) {
       <ContentContainer>
         <Section>
           <SectionTitle>Todos os Artigos</SectionTitle>
+
           {allPosts.length > 0 ? (
             allPosts.map((post) => (
               <PostCard
                 key={post.id}
                 post={post}
                 onPress={() => handlePostPress(post.id)}
-                variant="list"
+                variant="list-full"
               />
             ))
           ) : (
-            <Text>Nenhum artigo encontrado.</Text>
+            <EmptyMessage>Nenhum artigo encontrado.</EmptyMessage>
           )}
         </Section>
       </ContentContainer>

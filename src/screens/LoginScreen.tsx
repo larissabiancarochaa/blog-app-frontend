@@ -1,30 +1,65 @@
 import React, { useState } from 'react';
-import { Alert } from 'react-native';
+import { Alert, TouchableOpacity } from 'react-native';
 import styled from 'styled-components/native';
-import FormInput from '../components/FormInput';
+import FormInput from '../components/FormInput'; // vou adaptar para receber estilos
 import PrimaryButton from '../components/PrimaryButton';
 import { API_URL } from '../services/config';
 
 const Container = styled.View`
   flex: 1;
-  background-color: #121212;
+  background-color: white;
+  padding: 24px 20px;
   justify-content: center;
-  padding: 20px;
 `;
 
 const Title = styled.Text`
-  color: white;
   font-family: 'Montserrat-Bold';
   font-size: 28px;
-  margin-bottom: 20px;
-  text-align: center;
+  color: black;
+  text-align: left;
+  margin-bottom: 8px;
 `;
 
-const LinkText = styled.Text`
-  color: #10a3b9;
+const Subtitle = styled.Text`
   font-family: 'Montserrat-Regular';
-  margin-top: 16px;
-  text-align: center;
+  font-size: 16px;
+  color: #333333;
+  text-align: left;
+  margin-bottom: 32px;
+`;
+
+const StyledFormInput = styled(FormInput)`
+  background-color: white;
+  border: 1px solid black;
+  margin-bottom: 12px;
+  color: black;
+`;
+
+const ForgotPasswordContainer = styled.View`
+  width: 100%;
+  align-items: flex-end;
+  margin-bottom: 24px;
+`;
+
+const ForgotPasswordText = styled.Text`
+  color: #000;
+  font-family: 'Montserrat-Regular';
+  font-size: 14px;
+`;
+
+const StyledPrimaryButton = styled(PrimaryButton)`
+  background-color: black;
+  margin-bottom: 20px;
+`;
+
+const RegisterContainer = styled.View`
+  align-items: center;
+`;
+
+const RegisterText = styled.Text`
+  color: #000;
+  font-family: 'Montserrat-Regular';
+  font-size: 16px;
 `;
 
 interface Props {
@@ -50,16 +85,12 @@ export default function LoginScreen({ navigation }: Props) {
         return;
       }
   
-      console.log('Usuário logado:', data.user); // DEBUG: veja como é o objeto user
-  
-      // Extrair os campos que você quer passar para Home
       const userToSend = {
         id: data.user.id,
         first_name: data.user.first_name || data.user.firstName || '',
         last_name: data.user.last_name || data.user.lastName || '',
         email: data.user.email || '',
         profile_image: data.user.profile_image || data.user.profileImage || null,
-        // inclua aqui outros campos que achar importante
       };
   
       navigation.navigate('Home', { user: userToSend });
@@ -67,20 +98,42 @@ export default function LoginScreen({ navigation }: Props) {
     } catch (error) {
       Alert.alert('Erro', 'Erro de conexão');
     }
-  } 
+  }
 
   return (
     <Container>
-      <Title>Login</Title>
-      <FormInput placeholder="Email" value={email} onChangeText={setEmail} />
-      <FormInput placeholder="Senha" value={password} onChangeText={setPassword} secureTextEntry />
-      <PrimaryButton title="Entrar" onPress={handleLogin} />
-      <LinkText onPress={() => navigation.navigate('ForgotPassword')}>
-        Esqueci minha senha
-      </LinkText>
-      <LinkText onPress={() => navigation.navigate('Register')}>
-        Não tem conta? Cadastre-se
-      </LinkText>
+      <Title>Bem-vindo de volta!</Title>
+      <Subtitle>
+        Acesse sua conta para acompanhar artigos exclusivos, favoritar e muito mais.
+      </Subtitle>
+
+      <StyledFormInput 
+        placeholder="Email" 
+        value={email} 
+        onChangeText={setEmail} 
+        keyboardType="email-address"
+        autoCapitalize="none"
+      />
+      <StyledFormInput 
+        placeholder="Senha" 
+        value={password} 
+        onChangeText={setPassword} 
+        secureTextEntry 
+      />
+
+      <ForgotPasswordContainer>
+        <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
+          <ForgotPasswordText>Esqueceu a senha?</ForgotPasswordText>
+        </TouchableOpacity>
+      </ForgotPasswordContainer>
+
+      <StyledPrimaryButton title="Login" onPress={handleLogin} />
+
+      <RegisterContainer>
+        <TouchableOpacity onPress={() => navigation.navigate('Register')}>
+          <RegisterText>Novo usuário? Clique aqui</RegisterText>
+        </TouchableOpacity>
+      </RegisterContainer>
     </Container>
   );
 }

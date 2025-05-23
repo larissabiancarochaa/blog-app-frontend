@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components/native';
 
 const Button = styled.TouchableOpacity`
-  background-color: #10a3b9;
+  background-color: #000000;
   padding: 14px;
   border-radius: 6px;
   align-items: center;

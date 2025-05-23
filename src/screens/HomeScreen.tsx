@@ -1,5 +1,6 @@
+// screens/HomeScreen.tsx
 import React, { useState, useEffect } from 'react';
-import { Dimensions, Button } from 'react-native'; 
+import { Dimensions } from 'react-native'; 
 import styled from 'styled-components/native';
 import Carousel from 'react-native-reanimated-carousel';
 
@@ -10,35 +11,54 @@ import { fetchPosts, fetchTopPosts } from '../services/api';
 
 const Container = styled.View`
   flex: 1;
+  background-color: #ffffff;
+  padding: 30px 0 70px 0
 `;
 
 const ContentContainer = styled.ScrollView`
   flex: 1;
-  padding: 16px;
+  padding: 20px 16px;
 `;
 
 const FeaturedPostContainer = styled.View`
-  margin-bottom: 24px;
+  margin-bottom: 28px;
 `;
 
 const Section = styled.View`
-  margin-bottom: 24px;
+  margin-bottom: 32px;
 `;
 
 const SectionTitle = styled.Text`
   font-size: 20px;
-  font-weight: bold; 
+  font-weight: bold;
   margin-bottom: 16px;
   font-family: 'Montserrat-Bold';
-  color: #333;
+  color: #222;
+`;
+
+const RecentPostsWrapper = styled.View`
+  background-color: #f3f3f3;
+  padding: 16px;
+  border-radius: 16px;
+  shadow-color: #000;
+  shadow-opacity: 0.08;
+  shadow-radius: 8px;
+  elevation: 2;
+  gap: 12px;
+`;
+
+const RecentPostsImage = styled.Image`
+  width: 60px;
+  height: 60px;
+  margin-bottom: 12px;
+  align-self: center;
+  border-radius: 8px;
 `;
 
 const screenWidth = Dimensions.get('window').width;
 
 export default function HomeScreen({ navigation, route }: any) {
   const user = route.params?.user;
-
-  console.log('Usuário recebido na Home:', user);
 
   const [modalVisible, setModalVisible] = useState(false);
   const [latestPost, setLatestPost] = useState<any>(null);
@@ -80,7 +100,6 @@ export default function HomeScreen({ navigation, route }: any) {
     };
   }, []);
 
-  // Desabilita scroll do carousel enquanto modal aberto
   useEffect(() => {
     setCarouselScrollEnabled(!modalVisible);
   }, [modalVisible]);
@@ -111,7 +130,6 @@ export default function HomeScreen({ navigation, route }: any) {
 
       <ContentContainer>
 
-        {/* Destaque */}
         {latestPost && (
           <FeaturedPostContainer>
             <PostCard
@@ -122,26 +140,26 @@ export default function HomeScreen({ navigation, route }: any) {
           </FeaturedPostContainer>
         )}
 
-        {/* Últimas postagens */}
         <Section>
-          <SectionTitle>Últimas Postagens</SectionTitle>
-          {recentPosts.map((post) => (
-            <PostCard
-              key={post.id}
-              post={post}
-              onPress={() => handlePostPress(post.id)}
-              variant="list"
-            />
-          ))}
+          <SectionTitle>Posts Recentes</SectionTitle>
+          <RecentPostsWrapper>
+            {recentPosts.map((post) => (
+              <PostCard
+                key={post.id}
+                post={post}
+                onPress={() => handlePostPress(post.id)}
+                variant="list-home"
+              />
+            ))}
+          </RecentPostsWrapper>
         </Section>
 
-        {/* Carousel de mais curtidos */}
         <Section style={{ pointerEvents: modalVisible ? 'none' : 'auto' }}>
           <SectionTitle>Mais Curtidos</SectionTitle>
           {!modalVisible && (
             <Carousel
               loop
-              width={screenWidth * 0.75}
+              width={screenWidth * 1}
               height={250}
               autoPlay={false}
               data={topPosts}
@@ -152,6 +170,7 @@ export default function HomeScreen({ navigation, route }: any) {
             />
           )}
         </Section>
+
       </ContentContainer>
     </Container>
   );

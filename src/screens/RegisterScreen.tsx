@@ -1,24 +1,39 @@
 import React, { useState } from 'react';
-import { Alert, Image, TouchableOpacity, Text } from 'react-native';
+import { Alert, TouchableOpacity } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import styled from 'styled-components/native';
 import FormInput from '../components/FormInput';
 import PrimaryButton from '../components/PrimaryButton';
 import { API_URL } from '../services/config';
+import { Ionicons } from '@expo/vector-icons';
 
-const Container = styled.View`
+const Container = styled.ScrollView`
   flex: 1;
-  background-color: #121212;
-  justify-content: center;
-  padding: 20px;
+  background-color: #ffffff;
+  padding: 24px 20px;
+`;
+
+const Header = styled.View`
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 16px;
+`;
+
+const BackButton = styled.TouchableOpacity`
+  margin-right: 10px;
 `;
 
 const Title = styled.Text`
-  color: white;
   font-family: 'Montserrat-Bold';
   font-size: 28px;
-  margin-bottom: 20px;
-  text-align: center;
+  color: #000;
+`;
+
+const Subtitle = styled.Text`
+  font-family: 'Montserrat-Regular';
+  font-size: 16px;
+  color: #444;
+  margin-bottom: 24px;
 `;
 
 const ProfileImage = styled.Image`
@@ -26,13 +41,64 @@ const ProfileImage = styled.Image`
   height: 100px;
   border-radius: 50px;
   align-self: center;
-  margin-bottom: 20px;
+  margin-bottom: 12px;
 `;
 
 const UploadText = styled.Text`
-  color: #fff;
+  font-family: 'Montserrat-Regular';
+  font-size: 14px;
+  color: #000;
   text-align: center;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
+`;
+
+const StyledFormInput = styled(FormInput)`
+  background-color: white;
+  border: 1px solid black;
+  margin-bottom: 12px;
+  color: black;
+`;
+
+const TermsContainer = styled.View`
+  flex-direction: row;
+  align-items: flex-start;
+  margin-bottom: 20px;
+`;
+
+const Checkbox = styled.TouchableOpacity`
+  width: 20px;
+  height: 20px;
+  border: 1px solid #000;
+  margin-right: 10px;
+  margin-top: 3px;
+  align-items: center;
+  justify-content: center;
+`;
+
+const Checkmark = styled.View`
+  width: 12px;
+  height: 12px;
+  background-color: black;
+`;
+
+const TermsText = styled.Text`
+  font-family: 'Montserrat-Regular';
+  font-size: 14px;
+  color: #333;
+  flex: 1;
+`;
+
+const RegisterLink = styled.Text`
+  font-family: 'Montserrat-Regular';
+  font-size: 16px;
+  color: #000;
+  text-align: center;
+  margin-top: 24px;
+`;
+
+const ContentWrapper = styled.View`
+  flex: 1;
+  justify-content: center;
 `;
 
 interface Props {
@@ -46,6 +112,7 @@ export default function RegisterScreen({ navigation }: Props) {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [agreed, setAgreed] = useState(false);
 
   async function pickImage() {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -70,6 +137,11 @@ export default function RegisterScreen({ navigation }: Props) {
       return;
     }
 
+    if (!agreed) {
+      Alert.alert('Atenção', 'Você precisa concordar com os Termos de Uso e a Política de Privacidade.');
+      return;
+    }
+
     try {
       const res = await fetch(`${API_URL}/api/auth/register`, {
         method: 'POST',
@@ -80,7 +152,7 @@ export default function RegisterScreen({ navigation }: Props) {
           email,
           password,
           confirmPassword,
-          profile_image: profileImage, 
+          profile_image: profileImage,
         }),
       });
 
@@ -99,23 +171,49 @@ export default function RegisterScreen({ navigation }: Props) {
   }
 
   return (
-    <Container>
-      <Title>Cadastro</Title>
-
-      <TouchableOpacity onPress={pickImage}>
-        {profileImage ? (
-          <ProfileImage source={{ uri: profileImage }} />
-        ) : (
-          <UploadText>Selecionar Imagem de Perfil</UploadText>
-        )}
-      </TouchableOpacity>
-
-      <FormInput placeholder="Nome" value={firstName} onChangeText={setFirstName} />
-      <FormInput placeholder="Sobrenome" value={lastName} onChangeText={setLastName} />
-      <FormInput placeholder="Email" value={email} onChangeText={setEmail} />
-      <FormInput placeholder="Senha" value={password} onChangeText={setPassword} secureTextEntry />
-      <FormInput placeholder="Confirmar Senha" value={confirmPassword} onChangeText={setConfirmPassword} secureTextEntry />
-      <PrimaryButton title="Cadastrar" onPress={handleRegister} />
+    <Container showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1 }}>
+      <ContentWrapper>
+        <Header>
+          <BackButton onPress={() => navigation.navigate('Login')}>
+            <Ionicons name="arrow-back" size={24} color="black" />
+          </BackButton>
+          <Title>Registrar</Title>
+        </Header>
+  
+        <Subtitle>
+          Crie sua conta para explorar conteúdos incríveis, seguir autores e participar da comunidade.
+        </Subtitle>
+  
+        <TouchableOpacity onPress={pickImage}>
+          {profileImage ? (
+            <ProfileImage source={{ uri: profileImage }} />
+          ) : (
+            <UploadText>Selecionar Imagem de Perfil</UploadText>
+          )}
+        </TouchableOpacity>
+  
+        <StyledFormInput placeholder="Nome" value={firstName} onChangeText={setFirstName} />
+        <StyledFormInput placeholder="Sobrenome" value={lastName} onChangeText={setLastName} />
+        <StyledFormInput placeholder="Email" value={email} onChangeText={setEmail} />
+        <StyledFormInput placeholder="Senha" value={password} onChangeText={setPassword} secureTextEntry />
+        <StyledFormInput placeholder="Confirmar Senha" value={confirmPassword} onChangeText={setConfirmPassword} secureTextEntry />
+  
+        <TermsContainer>
+          <Checkbox onPress={() => setAgreed(!agreed)}>
+            {agreed && <Checkmark />}
+          </Checkbox>
+          <TermsText>
+            Li e concordo com os Termos de Uso e a Política de Privacidade.
+          </TermsText>
+        </TermsContainer>
+  
+        <PrimaryButton title="Cadastrar" onPress={handleRegister} />
+  
+        <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+          <RegisterLink>Já tem cadastro? Clique aqui</RegisterLink>
+        </TouchableOpacity>
+      </ContentWrapper>
     </Container>
   );
+  
 }

@@ -6,12 +6,12 @@ const HeaderContainer = styled.View`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  background-color: #121212;
+  background-color: #fff;
   padding: 16px 20px;
 `;
 
 const MenuText = styled.Text`
-  color: #ffffff;
+  color: #000;
   font-family: 'Montserrat-Bold';
   font-size: 16px;
   margin-right: 16px;

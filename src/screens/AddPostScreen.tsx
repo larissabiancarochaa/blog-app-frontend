@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Alert, ScrollView, TouchableOpacity } from 'react-native';
+import {
+  Alert,
+  ScrollView,
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform,
+  Text,
+} from 'react-native';
 import styled from 'styled-components/native';
 import * as ImagePicker from 'expo-image-picker';
 import FormInput from '../components/FormInput';
@@ -8,12 +15,13 @@ import { API_URL } from '../services/config';
 
 const Container = styled.View`
   flex: 1;
-  background-color: #121212;
-  padding: 20px;
+  background-color: #fff;
+  padding: 20px 20px 40px 20px;
+  justify-content: center;
 `;
 
 const Title = styled.Text`
-  color: white;
+  color: #222;
   font-family: 'Montserrat-Bold';
   font-size: 28px;
   margin-bottom: 20px;
@@ -28,9 +36,22 @@ const ImagePreview = styled.Image`
 `;
 
 const UploadText = styled.Text`
-  color: #fff;
+  color: #555;
   text-align: center;
   margin-bottom: 10px;
+  font-size: 16px;
+`;
+
+const BackButton = styled.TouchableOpacity`
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 8px 12px;
+`;
+
+const BackButtonText = styled.Text`
+  color: #555;
+  font-size: 16px;
 `;
 
 interface Props {
@@ -70,7 +91,6 @@ export default function AddPostScreen({ navigation, route }: Props) {
       return;
     }
 
-    // Gerar número aleatório de 0 a 99 para likes
     const randomLikes = Math.floor(Math.random() * 100);
 
     try {
@@ -79,7 +99,7 @@ export default function AddPostScreen({ navigation, route }: Props) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           title,
-          content,         // enviando 'content'
+          content,
           image: imageBase64,
           author_id: user?.id,
           likes: randomLikes,
@@ -103,30 +123,42 @@ export default function AddPostScreen({ navigation, route }: Props) {
   }
 
   return (
-    <ScrollView>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
       <Container>
-        <Title>Novo Artigo</Title>
+        <BackButton onPress={() => navigation.goBack()}>
+          <BackButtonText>← Voltar</BackButtonText>
+        </BackButton>
 
-        <TouchableOpacity onPress={pickImage}>
-          {imageBase64 ? (
-            <ImagePreview source={{ uri: imageBase64 }} />
-          ) : (
-            <UploadText>Selecionar Imagem do Artigo</UploadText>
-          )}
-        </TouchableOpacity>
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}
+          keyboardShouldPersistTaps="handled"
+        >
+          <Title>Novo Artigo</Title>
 
-        <FormInput placeholder="Título" value={title} onChangeText={setTitle} />
-        <FormInput
-          placeholder="Conteúdo"
-          value={content}
-          onChangeText={setContent}
-          multiline
-          numberOfLines={6}
-          style={{ height: 120, textAlignVertical: 'top' }}
-        />
+          <TouchableOpacity onPress={pickImage}>
+            {imageBase64 ? (
+              <ImagePreview source={{ uri: imageBase64 }} />
+            ) : (
+              <UploadText>Selecionar Imagem do Artigo</UploadText>
+            )}
+          </TouchableOpacity>
 
-        <PrimaryButton title="Publicar Artigo" onPress={handleAddPost} />
+          <FormInput placeholder="Título" value={title} onChangeText={setTitle} />
+          <FormInput
+            placeholder="Conteúdo"
+            value={content}
+            onChangeText={setContent}
+            multiline
+            numberOfLines={6}
+            style={{ height: 120, textAlignVertical: 'top' }}
+          />
+
+          <PrimaryButton title="Publicar Artigo" onPress={handleAddPost} />
+        </ScrollView>
       </Container>
-    </ScrollView>
+    </KeyboardAvoidingView>
   );
 }

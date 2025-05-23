@@ -1,12 +1,27 @@
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert } from 'react-native';
+import { ActivityIndicator, Alert, TouchableOpacity, Text } from 'react-native';
 import styled from 'styled-components/native';
 import { API_URL } from '../services/config';
 
 const Container = styled.ScrollView`
   flex: 1;
-  padding: 16px;
-  background-color: #121212;
+  padding: 16px 16px 16px 16px;
+  padding-top: 40px; /* padding extra no topo */
+  background-color: #ffffff;
+`;
+
+const BackButton = styled(TouchableOpacity)`
+  margin-bottom: 20px;
+  padding: 8px 12px;
+  align-self: flex-start;
+  background-color: #e0e0e0;
+  border-radius: 8px;
+`;
+
+const BackButtonText = styled.Text`
+  color: #333333;
+  font-size: 16px;
+  font-weight: 600;
 `;
 
 const PostImage = styled.Image`
@@ -21,7 +36,7 @@ const PostTitle = styled.Text`
   font-weight: bold;
   margin-bottom: 16px;
   font-family: 'Montserrat-Bold';
-  color: #fff;
+  color: #000000;
 `;
 
 const PostContent = styled.Text`
@@ -29,7 +44,7 @@ const PostContent = styled.Text`
   line-height: 24px;
   margin-bottom: 16px;
   font-family: 'Montserrat-Regular';
-  color: #e0e0e0;
+  color: #333333;
 `;
 
 const AuthorInfo = styled.View`
@@ -48,7 +63,7 @@ const AuthorImage = styled.Image`
 const AuthorName = styled.Text`
   font-size: 14px;
   font-family: 'Montserrat-Italic';
-  color: #aaa;
+  color: #666666;
 `;
 
 export default function PostDetailScreen({ route, navigation }: any) {
@@ -84,7 +99,7 @@ export default function PostDetailScreen({ route, navigation }: any) {
   if (loading) {
     return (
       <Container contentContainerStyle={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" color="#10A3B9" />
+        <ActivityIndicator size="large" color="#000000" />
       </Container>
     );
   }
@@ -95,6 +110,10 @@ export default function PostDetailScreen({ route, navigation }: any) {
 
   return (
     <Container>
+      <BackButton onPress={() => navigation.goBack()}>
+        <BackButtonText>← Voltar</BackButtonText>
+      </BackButton>
+
       {post.image && <PostImage source={{ uri: post.image }} />}
       <PostTitle>{post.title}</PostTitle>
       <PostContent>{post.description}</PostContent>

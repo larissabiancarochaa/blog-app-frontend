@@ -13,9 +13,9 @@ interface FormInputProps {
 }
 
 const Input = styled.TextInput`
-  background-color: black;
-  color: white;
-  border: 1px solid white;
+  background-color: white;
+  color: black;
+  border: 1px solid black;
   padding: 12px 16px;
   margin-bottom: 12px;
   font-family: 'Montserrat-Regular';

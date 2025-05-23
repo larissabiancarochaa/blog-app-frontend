@@ -1,18 +1,13 @@
 import React from 'react';
-import { TouchableOpacity, Text, Image } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 import styled from 'styled-components/native';
 import { FontAwesome } from '@expo/vector-icons';
 
-const Card = styled.View`
-  background-color: white;
+const Card = styled.View<{ variant: string }>`
+  background-color: transparent;
   border-radius: 8px;
   padding: 12px;
   margin-bottom: 16px;
-  shadow-color: #000;
-  shadow-offset: 0 2px;
-  shadow-opacity: 0.1;
-  shadow-radius: 4px;
-  elevation: 2;
   width: 100%;
 `;
 
@@ -27,7 +22,7 @@ const Title = styled.Text`
   font-size: 18px;
   font-weight: bold;
   font-family: 'Montserrat-Bold';
-  color: #333;
+  color: black;
   margin-bottom: 4px;
 `;
 
@@ -41,7 +36,6 @@ const MetaInfo = styled.View`
 const AuthorInfo = styled.View`
   flex-direction: row;
   align-items: center;
-  margin-top: 6px;
 `;
 
 const AuthorImage = styled.Image`
@@ -53,7 +47,7 @@ const AuthorImage = styled.Image`
 
 const AuthorName = styled.Text`
   font-size: 14px;
-  color: #333;
+  color: #000;
   font-family: 'Montserrat-SemiBold';
 `;
 
@@ -82,20 +76,27 @@ const PostDate = styled.Text`
   font-family: 'Montserrat-Italic';
 `;
 
+const AuthorRow = styled.View`
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+`;
+
 interface PostCardProps {
   post: {
     id: number;
     title: string;
     description?: string;
-    image?: string; // base64
+    image?: string;
     likes: number;
     created_at?: string;
     first_name?: string;
     last_name?: string;
-    profile_image?: string; // base64
+    profile_image?: string;
   };
   onPress: () => void;
-  variant?: 'featured' | 'list' | 'carousel';
+  variant?: 'featured' | 'carousel' | 'list-home' | 'list-full';
 }
 
 export const PostCard: React.FC<PostCardProps> = ({ post, onPress, variant = 'featured' }) => {
@@ -108,43 +109,56 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onPress, variant = 'fe
       ? post.description.slice(0, 100).trim() + '...'
       : post.description;
 
-  return (
-    <TouchableOpacity onPress={onPress}>
-      <Card>
-        {(variant === 'featured' || variant === 'carousel') && post.image && (
-          <PostImage source={{ uri: post.image }} resizeMode="cover" />
-        )}
-
-        <Title numberOfLines={2}>{post.title}</Title>
-
-        {variant === 'featured' && (
-           <>
-           {(post.first_name || post.last_name) && (
-             <AuthorInfo>
-               {post.profile_image && (
-                 <AuthorImage source={{ uri: post.profile_image }} />
-               )}
-               <AuthorName>{post.first_name} {post.last_name}</AuthorName>
-             </AuthorInfo>
-           )}
-           <PostDate>{formattedDate}</PostDate>
-         </>
-        )}
-
-        {variant === 'list' && shortDescription && (
-          <Description>{shortDescription}</Description>
-        )}
-
-        {variant === 'carousel' && (
-          <MetaInfo>
-            <LikesContainer>
-              <FontAwesome name="heart" size={16} color="#e63946" />
-              <LikesText>{post.likes}</LikesText>
-            </LikesContainer>
-            <PostDate>{formattedDate}</PostDate>
-          </MetaInfo>
-        )}
-      </Card>
-    </TouchableOpacity>
-  );
+      return (
+        <TouchableOpacity onPress={onPress}>
+          <Card variant={variant}>
+      
+            {/* Imagem */}
+            {(variant === 'featured' || variant === 'carousel' || variant === 'list-full') && post.image && (
+              <PostImage source={{ uri: post.image }} resizeMode="cover" />
+            )}
+      
+            <Title numberOfLines={2}>{post.title}</Title>
+      
+            {/* Descrição curta para list-home e list-full */}
+            {(variant === 'list-home' || variant === 'list-full') && shortDescription && (
+              <Description>{shortDescription}</Description>
+            )}
+      
+            {/* Autor, likes e data para featured e list-full */}
+            {(variant === 'featured' || variant === 'list-full') && (
+              <>
+                {(post.first_name || post.last_name || post.created_at || post.likes !== undefined) && (
+                  <AuthorRow>
+                    <AuthorInfo>
+                      {post.profile_image && <AuthorImage source={{ uri: post.profile_image }} />}
+                      <AuthorName>{post.first_name} {post.last_name}</AuthorName>
+                    </AuthorInfo>
+      
+                    <MetaInfo>
+                      <LikesContainer>
+                        <FontAwesome name="heart" size={16} color="#e63946" />
+                        <LikesText>{post.likes}</LikesText>
+                      </LikesContainer>
+                      <PostDate>{formattedDate}</PostDate>
+                    </MetaInfo>
+                  </AuthorRow>
+                )}
+              </>
+            )}
+      
+            {/* Likes e data para carousel */}
+            {variant === 'carousel' && (
+              <MetaInfo>
+                <LikesContainer>
+                  <FontAwesome name="heart" size={16} color="#e63946" />
+                  <LikesText>{post.likes}</LikesText>
+                </LikesContainer>
+                <PostDate>{formattedDate}</PostDate>
+              </MetaInfo>
+            )}
+      
+          </Card>
+        </TouchableOpacity>
+      );      
 };

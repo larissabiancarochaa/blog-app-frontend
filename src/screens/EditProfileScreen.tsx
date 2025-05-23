@@ -8,13 +8,13 @@ import { API_URL } from '../services/config';
 
 const Container = styled.View`
   flex: 1;
-  background-color: #121212;
+  background-color: #ffffff;
   justify-content: center;
   padding: 20px;
 `;
 
 const Title = styled.Text`
-  color: white;
+  color: #000000;
   font-family: 'Montserrat-Bold';
   font-size: 28px;
   margin-bottom: 20px;
@@ -30,7 +30,7 @@ const ProfileImage = styled.Image`
 `;
 
 const UploadText = styled.Text`
-  color: #fff;
+  color: #000000;
   text-align: center;
   margin-bottom: 10px;
 `;

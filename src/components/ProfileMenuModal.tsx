@@ -1,27 +1,37 @@
 import React from 'react';
 import styled from 'styled-components/native';
 import { Modal } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
 const ModalContainer = styled.View`
   flex: 1;
-  background-color: rgba(0, 0, 0, 0.85);
+  background-color: #ffffff;
   justify-content: center;
   align-items: center;
+  padding: 24px;
+`;
+
+const CloseButton = styled.TouchableOpacity`
+  position: absolute;
+  top: 50px;
+  right: 30px;
+  z-index: 10;
 `;
 
 const OptionButton = styled.TouchableOpacity`
-  background-color: #1e1e1e; 
+  background-color: #fff;
   padding: 16px 32px;
-  margin: 10px 0;
+  margin: 12px 0;
   border-radius: 10px;
   width: 80%;
+  align-items: flex-end;
 `;
 
 const OptionText = styled.Text`
-  color: white;
+  color: #000;
   font-family: 'Montserrat-Bold';
   font-size: 18px;
-  text-align: center;
+  text-align: right;
 `;
 
 interface Props {
@@ -46,12 +56,23 @@ export default function ProfileMenuModal({ visible, onClose, navigateTo, user }:
       } else {
         navigateTo(screen);
       }
-    }, 300); 
-  }  
+    }, 300);
+  }
+
+  function handleLogout() {
+    onClose();
+    setTimeout(() => {
+      navigateTo('Login');
+    }, 300);
+  }
 
   return (
     <Modal visible={visible} animationType="slide" transparent>
       <ModalContainer>
+        <CloseButton onPress={onClose}>
+          <Ionicons name="close" size={32} color="#000" />
+        </CloseButton>
+
         <OptionButton onPress={() => handleNavigate('EditProfile')}>
           <OptionText>Perfil</OptionText>
         </OptionButton>
@@ -61,8 +82,8 @@ export default function ProfileMenuModal({ visible, onClose, navigateTo, user }:
         <OptionButton onPress={() => handleNavigate('AddPost')}>
           <OptionText>Adicionar Artigo</OptionText>
         </OptionButton>
-        <OptionButton onPress={onClose}>
-          <OptionText>Fechar</OptionText>
+        <OptionButton onPress={handleLogout}>
+          <OptionText>Sair</OptionText>
         </OptionButton>
       </ModalContainer>
     </Modal>
